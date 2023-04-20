@@ -1,0 +1,20 @@
+{
+  "name": "planner-app-backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "timezone": "-06:00",
+  "scripts": {
+    "start": "node index"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "mariadb": "^3.1.1",
+    "sequelize": "^6.31.0",
+    "uuid": "^9.0.0"
+  }
+}
