@@ -13,11 +13,6 @@ const Note = config.define(
       type: Sequelize.STRING,
       allowNull: false,
     },
-
-    header: {
-      type: Sequelize.STRING,
-      allowNull: false,
-    },
     details: {
       type: Sequelize.TEXT,
       allowNull: false,

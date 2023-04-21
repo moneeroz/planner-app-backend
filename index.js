@@ -207,12 +207,11 @@ app.get("/api/notes/:note_id", (req, res) => {
 // Create a new note
 app.post("/api/notes", (req, res) => {
   const id = uuidv4();
-  const { name, header, details, importance } = req.body;
+  const { name, details, importance } = req.body;
 
   Note.create({
     id,
     name,
-    header,
     details,
     importance,
   })
