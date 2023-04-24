@@ -26,9 +26,20 @@ config
 /// /// /// /// /// /// /// /// /// /// /// /// /// /// ///
 // Todo HTTP Methods
 
-// Retrieve all todos from DB todo table
+// Retrieve all pending todos from DB todo table
 app.get("/api/todos", (req, res) => {
-  Todo.findAll()
+  Todo.findAll({ where: { status: "pending", deleted: "false" } }) // you can filter multiple columns
+    .then((results) => {
+      res.status(200).send(results);
+    })
+    .catch((err) => {
+      res.status(500).send(err);
+    });
+});
+
+// Retrieve all todos marked as deleted from DB todo table
+app.get("/api/todos/deleted", (req, res) => {
+  Todo.findAll({ where: { deleted: "true" } }) // you can filter multiple columns
     .then((results) => {
       res.status(200).send(results);
     })
@@ -39,9 +50,9 @@ app.get("/api/todos", (req, res) => {
 
 // Find a todo based on their id
 app.get("/api/todos/:todo_id", (req, res) => {
-  const todoId = req.params.task_id;
+  const todoId = req.params.todo_id;
   // Find by primary key
-  Task.findByPk(todoId)
+  Todo.findByPk(todoId)
     .then((result) => {
       res.status(200).send(result);
     })
@@ -75,10 +86,10 @@ app.post("/api/todos", (req, res) => {
 app.patch("/api/todos/update-status/:todo_id", (req, res) => {
   const todoId = req.params.todo_id;
 
-  // Find the task based on the id
-  Task.findByPk(todoId)
+  // Find the todo based on the id
+  Todo.findByPk(todoId)
     .then((result) => {
-      // Check if task exists in the database table
+      // Check if todo exists in the database table
       if (!result) {
         res.status(404).send("Todo was not found");
         return;
@@ -98,14 +109,53 @@ app.patch("/api/todos/update-status/:todo_id", (req, res) => {
       res.status(500).send(err);
     });
 });
+
+// Delete a todo from db
+app.delete("/api/todos/:todo_id", (req, res) => {
+  const todoId = req.params.todo_id;
+
+  // Find the todo based on the id
+  Todo.findByPk(todoId)
+    .then((result) => {
+      // Check if todo exists in the database table
+      if (!result) {
+        res.status(404).send("Todo was not found");
+        return;
+      }
+
+      // Deletes todo from database
+      result
+        .destroy()
+        .then(() => {
+          res.status(200).send(result);
+        })
+        .catch((err) => {
+          res.status(500).send(err);
+        });
+    })
+    .catch((err) => {
+      res.status(500).send(err);
+    });
+});
 /// /// /// /// /// /// /// /// /// /// /// /// /// /// ///
 
 /// /// /// /// /// /// /// /// /// /// /// /// /// /// ///
 // Goal HTTP Methods
 
-// Retrieve all goals from DB goal table
+// Retrieve all pending goals from DB goal table
 app.get("/api/goals", (req, res) => {
-  Goal.findAll()
+  Goal.findAll({ where: { status: "pending", deleted: "false" } }) // you can filter multiple columns
+    .then((results) => {
+      res.status(200).send(results);
+    })
+    .catch((err) => {
+      res.status(500).send(err);
+    });
+});
+
+// Retrieve all goals marked as deleted from DB goal table
+app.get("/api/goals/deleted", (req, res) => {
+  Goal.findAll({ where: { deleted: "true" } }) // you can filter multiple columns
     .then((results) => {
       res.status(200).send(results);
     })
@@ -152,10 +202,10 @@ app.post("/api/goals", (req, res) => {
 app.patch("/api/goals/update-status/:goal_id", (req, res) => {
   const goalId = req.params.goal_id;
 
-  // Find the task based on the id
+  // Find the goal based on the id
   Goal.findByPk(goalId)
     .then((result) => {
-      // Check if task exists in the database table
+      // Check if goal exists in the database table
       if (!result) {
         res.status(404).send("Goal was not found");
         return;
@@ -175,6 +225,34 @@ app.patch("/api/goals/update-status/:goal_id", (req, res) => {
       res.status(500).send(err);
     });
 });
+
+// Delete a goal from db
+app.delete("/api/goals/:goal_id", (req, res) => {
+  const goalId = req.params.goal_id;
+
+  // Find the goal based on the id
+  Goal.findByPk(goalId)
+    .then((result) => {
+      // Check if goal exists in the database table
+      if (!result) {
+        res.status(404).send("Goal was not found");
+        return;
+      }
+
+      // Deletes goal from database
+      result
+        .destroy()
+        .then(() => {
+          res.status(200).send(result);
+        })
+        .catch((err) => {
+          res.status(500).send(err);
+        });
+    })
+    .catch((err) => {
+      res.status(500).send(err);
+    });
+});
 /// /// /// /// /// /// /// /// /// /// /// /// /// /// ///
 
 /// /// /// /// /// /// /// /// /// /// /// /// /// /// ///
@@ -182,7 +260,18 @@ app.patch("/api/goals/update-status/:goal_id", (req, res) => {
 
 // Retrieve all notes from DB note table
 app.get("/api/notes", (req, res) => {
-  Note.findAll()
+  Note.findAll({ where: { deleted: "false" } })
+    .then((results) => {
+      res.status(200).send(results);
+    })
+    .catch((err) => {
+      res.status(500).send(err);
+    });
+});
+
+// Retrieve all notes marked as deleted from DB note table
+app.get("/api/notes/deleted", (req, res) => {
+  Note.findAll({ where: { deleted: "true" } }) // you can filter multiple columns
     .then((results) => {
       res.status(200).send(results);
     })
@@ -222,6 +311,60 @@ app.post("/api/notes", (req, res) => {
       res.status(500).send(err);
     });
 });
+
+// Delete a note from db
+app.delete("/api/notes/:note_id", (req, res) => {
+  const noteId = req.params.note_id;
+
+  // Find the note based on the id
+  Note.findByPk(noteId)
+    .then((result) => {
+      // Check if note exists in the database table
+      if (!result) {
+        res.status(404).send("Note was not found");
+        return;
+      }
+
+      // Deletes note from database
+      result
+        .destroy()
+        .then(() => {
+          res.status(200).send(result);
+        })
+        .catch((err) => {
+          res.status(500).send(err);
+        });
+    })
+    .catch((err) => {
+      res.status(500).send(err);
+    });
+});
+
+/// /// /// /// /// /// /// /// /// /// /// /// /// /// ///
+// Achievements HTTP Methods
+
+// Retrieve all completed Todos from DB note table
+app.get("/api/achievements/achieved-todos", (req, res) => {
+  Todo.findAll({ where: { status: "completed" } }) // you can filter multiple columns
+    .then((results) => {
+      res.status(200).send(results);
+    })
+    .catch((err) => {
+      res.status(500).send(err);
+    });
+});
+
+// Retrieve all completed Goals from DB note table
+app.get("/api/achievements/achieved-goals", (req, res) => {
+  Goal.findAll({ where: { status: "completed" } })
+    .then((results) => {
+      res.status(200).send(results);
+    })
+    .catch((err) => {
+      res.status(500).send(err);
+    });
+});
+
 /// /// /// /// /// /// /// /// /// /// /// /// /// /// ///
 // Server
 const PORT = 3333;

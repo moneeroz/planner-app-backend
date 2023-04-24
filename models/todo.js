@@ -29,6 +29,10 @@ const Todo = config.define(
       type: Sequelize.STRING,
       allowNull: false,
     },
+    deleted: {
+      type: Sequelize.STRING,
+      allowNull: false,
+    },
   },
   { timestamps: false },
 );
