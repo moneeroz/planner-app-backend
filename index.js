@@ -5,6 +5,7 @@ const config = require("./config");
 const Todo = require("./models/todo");
 const Goal = require("./models/goal");
 const Note = require("./models/note");
+const Diary = require("./models/diary");
 const cors = require("cors");
 
 // Middleware
@@ -21,10 +22,10 @@ config
   .catch((err) => {
     console.log(err);
   });
-/// /// /// /// /// /// /// /// /// /// /// /// /// /// ///
 
 /// /// /// /// /// /// /// /// /// /// /// /// /// /// ///
 // Todo HTTP Methods
+/// /// /// /// /// /// /// /// /// /// /// /// /// /// ///
 
 // Retrieve all pending todos from DB todo table
 app.get("/api/todos", (req, res) => {
@@ -37,7 +38,7 @@ app.get("/api/todos", (req, res) => {
     });
 });
 
-// Retrieve all todos marked as deleted from DB todo table
+// Retrieve all todos marked as deleted from DB todos table
 app.get("/api/todos/deleted", (req, res) => {
   Todo.findAll({ where: { deleted: "true" } }) // you can filter multiple columns
     .then((results) => {
@@ -151,7 +152,7 @@ app.delete("/api/todos/:todo_id", (req, res) => {
         return;
       }
 
-      // Deletes todo from database
+      // Delete todo from database
       result
         .destroy()
         .then(() => {
@@ -165,10 +166,10 @@ app.delete("/api/todos/:todo_id", (req, res) => {
       res.status(500).send(err);
     });
 });
-/// /// /// /// /// /// /// /// /// /// /// /// /// /// ///
 
 /// /// /// /// /// /// /// /// /// /// /// /// /// /// ///
 // Goal HTTP Methods
+/// /// /// /// /// /// /// /// /// /// /// /// /// /// ///
 
 // Retrieve all pending goals from DB goal table
 app.get("/api/goals", (req, res) => {
@@ -181,7 +182,7 @@ app.get("/api/goals", (req, res) => {
     });
 });
 
-// Retrieve all goals marked as deleted from DB goal table
+// Retrieve all goals marked as deleted from DB goals table
 app.get("/api/goals/deleted", (req, res) => {
   Goal.findAll({ where: { deleted: "true" } }) // you can filter multiple columns
     .then((results) => {
@@ -295,7 +296,7 @@ app.delete("/api/goals/:goal_id", (req, res) => {
         return;
       }
 
-      // Deletes goal from database
+      // Delete goal from database
       result
         .destroy()
         .then(() => {
@@ -309,10 +310,10 @@ app.delete("/api/goals/:goal_id", (req, res) => {
       res.status(500).send(err);
     });
 });
-/// /// /// /// /// /// /// /// /// /// /// /// /// /// ///
 
 /// /// /// /// /// /// /// /// /// /// /// /// /// /// ///
 // Note HTTP Methods
+/// /// /// /// /// /// /// /// /// /// /// /// /// /// ///
 
 // Retrieve all notes from DB note table
 app.get("/api/notes", (req, res) => {
@@ -325,7 +326,7 @@ app.get("/api/notes", (req, res) => {
     });
 });
 
-// Retrieve all notes marked as deleted from DB note table
+// Retrieve all notes marked as deleted from DB notes table
 app.get("/api/notes/deleted", (req, res) => {
   Note.findAll({ where: { deleted: "true" } }) // you can filter multiple columns
     .then((results) => {
@@ -409,7 +410,7 @@ app.delete("/api/notes/:note_id", (req, res) => {
         return;
       }
 
-      // Deletes note from database
+      // Delete note from database
       result
         .destroy()
         .then(() => {
@@ -426,6 +427,7 @@ app.delete("/api/notes/:note_id", (req, res) => {
 
 /// /// /// /// /// /// /// /// /// /// /// /// /// /// ///
 // Achievements HTTP Methods
+/// /// /// /// /// /// /// /// /// /// /// /// /// /// ///
 
 // Retrieve all completed Todos from DB note table
 app.get("/api/achievements/achieved-todos", (req, res) => {
@@ -450,7 +452,112 @@ app.get("/api/achievements/achieved-goals", (req, res) => {
 });
 
 /// /// /// /// /// /// /// /// /// /// /// /// /// /// ///
+// Diary HTTP Methods
+/// /// /// /// /// /// /// /// /// /// /// /// /// /// ///
+
+// Retrieve all image diaries from DB dairies table
+app.get("/api/diaries/images", (req, res) => {
+  Diary.findAll({ where: { type: "image" } })
+    .then((results) => {
+      res.status(200).send(results);
+    })
+    .catch((err) => {
+      res.status(500).send(err);
+    });
+});
+
+// Retrieve all video diaries from DB dairies table
+app.get("/api/diaries/videos", (req, res) => {
+  Diary.findAll({ where: { type: "video" } })
+    .then((results) => {
+      res.status(200).send(results);
+    })
+    .catch((err) => {
+      res.status(500).send(err);
+    });
+});
+
+// Find a diary based on their id
+app.get("/api/diaries/:diary_id", (req, res) => {
+  const diaryId = req.params.diary_id;
+  // Find by primary key
+  Diary.findByPk(diaryId)
+    .then((result) => {
+      res.status(200).send(result);
+    })
+    .catch((err) => {
+      res.status(500).send(err);
+    });
+});
+
+// Create a new image
+app.post("/api/diaries/new-image", (req, res) => {
+  const id = uuidv4();
+  const type = "image";
+  const { link } = req.body;
+
+  Diary.create({
+    id,
+    link,
+    type,
+  })
+    .then((result) => {
+      res.status(200).send(result); // result is the image Diary that was created
+    })
+    .catch((err) => {
+      res.status(500).send(err);
+    });
+});
+// Create a new video
+app.post("/api/diaries/new-video", (req, res) => {
+  const id = uuidv4();
+  const type = "video";
+  const { link } = req.body;
+
+  Diary.create({
+    id,
+    link,
+    type,
+  })
+    .then((result) => {
+      res.status(200).send(result); // result is the video Diary that was created
+    })
+    .catch((err) => {
+      res.status(500).send(err);
+    });
+});
+
+// Delete a diary from db
+app.delete("/api/diaries/:diary_id", (req, res) => {
+  const diaryId = req.params.diary_id;
+
+  // Find the diary based on the id
+  Diary.findByPk(diaryId)
+    .then((result) => {
+      // Check if diary exists in the database table
+      if (!result) {
+        res.status(404).send("Diary was not found");
+        return;
+      }
+
+      // Delete note from database
+      result
+        .destroy()
+        .then(() => {
+          res.status(200).send(result);
+        })
+        .catch((err) => {
+          res.status(500).send(err);
+        });
+    })
+    .catch((err) => {
+      res.status(500).send(err);
+    });
+});
+
+/// /// /// /// /// /// /// /// /// /// /// /// /// /// ///
 // Server
+/// /// /// /// /// /// /// /// /// /// /// /// /// /// ///
 const PORT = 3333;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
