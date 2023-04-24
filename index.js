@@ -110,6 +110,34 @@ app.patch("/api/todos/update-status/:todo_id", (req, res) => {
     });
 });
 
+// Update todo delete status
+app.patch("/api/todos/deleted-status/:todo_id", (req, res) => {
+  const todoId = req.params.todo_id;
+
+  // Find the todo based on the id
+  Todo.findByPk(todoId)
+    .then((result) => {
+      // Check if todo exists in the database table
+      if (!result) {
+        res.status(404).send("Todo was not found");
+        return;
+      }
+      result.deleted = req.body.deleted; // updating the todo deleted status
+      // Save the update into the database
+      result
+        .save()
+        .then(() => {
+          res.status(200).send(result);
+        })
+        .catch((err) => {
+          res.status(500).send(err);
+        });
+    })
+    .catch((err) => {
+      res.status(500).send(err);
+    });
+});
+
 // Delete a todo from db
 app.delete("/api/todos/:todo_id", (req, res) => {
   const todoId = req.params.todo_id;
@@ -226,6 +254,34 @@ app.patch("/api/goals/update-status/:goal_id", (req, res) => {
     });
 });
 
+// Update goal delete status
+app.patch("/api/goals/deleted-status/:goal_id", (req, res) => {
+  const goalId = req.params.goal_id;
+
+  // Find the goal based on the id
+  Goal.findByPk(goalId)
+    .then((result) => {
+      // Check if goal exists in the database table
+      if (!result) {
+        res.status(404).send("goal was not found");
+        return;
+      }
+      result.deleted = req.body.deleted; // updating the goal deleted status
+      // Save the update into the database
+      result
+        .save()
+        .then(() => {
+          res.status(200).send(result);
+        })
+        .catch((err) => {
+          res.status(500).send(err);
+        });
+    })
+    .catch((err) => {
+      res.status(500).send(err);
+    });
+});
+
 // Delete a goal from db
 app.delete("/api/goals/:goal_id", (req, res) => {
   const goalId = req.params.goal_id;
@@ -287,6 +343,34 @@ app.get("/api/notes/:note_id", (req, res) => {
   Note.findByPk(noteId)
     .then((result) => {
       res.status(200).send(result);
+    })
+    .catch((err) => {
+      res.status(500).send(err);
+    });
+});
+
+// Update note delete status
+app.patch("/api/notes/deleted-status/:note_id", (req, res) => {
+  const noteId = req.params.note_id;
+
+  // Find the note based on the id
+  Note.findByPk(noteId)
+    .then((result) => {
+      // Check if note exists in the database table
+      if (!result) {
+        res.status(404).send("note was not found");
+        return;
+      }
+      result.deleted = req.body.deleted; // updating the note deleted status
+      // Save the update into the database
+      result
+        .save()
+        .then(() => {
+          res.status(200).send(result);
+        })
+        .catch((err) => {
+          res.status(500).send(err);
+        });
     })
     .catch((err) => {
       res.status(500).send(err);
