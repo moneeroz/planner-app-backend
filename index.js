@@ -139,6 +139,39 @@ app.patch("/api/todos/deleted-status/:todo_id", (req, res) => {
     });
 });
 
+// Complete update of a Todo record
+app.put("/api/todos/update-todo/:todo_id", (req, res) => {
+  const todoId = req.params.todo_id;
+  const todoData = req.body;
+  // Find the todo
+  Todo.findByPk(todoId)
+    .then((result) => {
+      if (!result) {
+        res.status(404).send("Todo not found");
+      } else {
+        // Here we are doing a full update but we can do a partial update using PUT
+        result.name = todoData.name;
+        result.description = todoData.description;
+        result.start_date = todoData.start_date;
+        result.end_date = todoData.end_date;
+        result.status = todoData.status;
+
+        // Save changes to database
+        result
+          .save()
+          .then(() => {
+            res.status(200).send(result);
+          })
+          .catch((err) => {
+            res.status(500).send(err);
+          });
+      }
+    })
+    .catch((err) => {
+      res.status(500).send(err);
+    });
+});
+
 // Delete a todo from db
 app.delete("/api/todos/:todo_id", (req, res) => {
   const todoId = req.params.todo_id;
@@ -283,6 +316,39 @@ app.patch("/api/goals/deleted-status/:goal_id", (req, res) => {
     });
 });
 
+// Complete update of a Goal record
+app.put("/api/goals/update-goal/:goal_id", (req, res) => {
+  const goalId = req.params.goal_id;
+  const goalData = req.body;
+  // Find the goal
+  Goal.findByPk(goalId)
+    .then((result) => {
+      if (!result) {
+        res.status(404).send("Goal not found");
+      } else {
+        // Here we are doing a full update but we can do a partial update using PUT
+        result.name = goalData.name;
+        result.description = goalData.description;
+        result.start_date = goalData.start_date;
+        result.end_date = goalData.end_date;
+        result.status = goalData.status;
+
+        // Save changes to database
+        result
+          .save()
+          .then(() => {
+            res.status(200).send(result);
+          })
+          .catch((err) => {
+            res.status(500).send(err);
+          });
+      }
+    })
+    .catch((err) => {
+      res.status(500).send(err);
+    });
+});
+
 // Delete a goal from db
 app.delete("/api/goals/:goal_id", (req, res) => {
   const goalId = req.params.goal_id;
@@ -391,6 +457,37 @@ app.post("/api/notes", (req, res) => {
   })
     .then((result) => {
       res.status(200).send(result); // result is the Note that was created
+    })
+    .catch((err) => {
+      res.status(500).send(err);
+    });
+});
+
+// Complete update of a Note record
+app.put("/api/notes/update-note/:note_id", (req, res) => {
+  const noteId = req.params.note_id;
+  const noteData = req.body;
+  // Find the note
+  Note.findByPk(noteId)
+    .then((result) => {
+      if (!result) {
+        res.status(404).send("Note not found");
+      } else {
+        // Here we are doing a full update but we can do a partial update using PUT
+        result.name = noteData.name;
+        result.details = noteData.details;
+        result.importance = noteData.importance;
+
+        // Save changes to database
+        result
+          .save()
+          .then(() => {
+            res.status(200).send(result);
+          })
+          .catch((err) => {
+            res.status(500).send(err);
+          });
+      }
     })
     .catch((err) => {
       res.status(500).send(err);
@@ -512,7 +609,10 @@ app.post("/api/diaries/new-image", (req, res) => {
 app.post("/api/diaries/new-video", (req, res) => {
   const id = uuidv4();
   const type = "video";
-  const { link } = req.body;
+  const data = req.body;
+  const link_id = data.link.split("v=")[1]; // getting the youtube video id out of the link
+  const ytEmbed = "https://www.youtube.com/embed/";
+  const link = ytEmbed.concat(link_id);
 
   Diary.create({
     id,
