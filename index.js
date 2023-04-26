@@ -65,6 +65,7 @@ app.get("/api/todos/:todo_id", (req, res) => {
 // Create a new todo
 app.post("/api/todos", (req, res) => {
   const id = uuidv4();
+  const deleted = "false";
   const { description, name, start_date, end_date, status } = req.body;
 
   Todo.create({
@@ -74,6 +75,7 @@ app.post("/api/todos", (req, res) => {
     start_date,
     end_date,
     status,
+    deleted,
   })
     .then((result) => {
       res.status(200).send(result); // result is the Todo that was created
@@ -242,6 +244,7 @@ app.get("/api/goals/:goal_id", (req, res) => {
 // Create a new goal
 app.post("/api/goals", (req, res) => {
   const id = uuidv4();
+  const deleted = "false";
   const { description, name, start_date, end_date, status } = req.body;
 
   Goal.create({
@@ -251,6 +254,7 @@ app.post("/api/goals", (req, res) => {
     start_date,
     end_date,
     status,
+    deleted,
   })
     .then((result) => {
       res.status(200).send(result); // result is the Goal that was created
@@ -447,6 +451,7 @@ app.patch("/api/notes/deleted-status/:note_id", (req, res) => {
 // Create a new note
 app.post("/api/notes", (req, res) => {
   const id = uuidv4();
+  const deleted = "false";
   const { name, details, importance } = req.body;
 
   Note.create({
@@ -454,6 +459,7 @@ app.post("/api/notes", (req, res) => {
     name,
     details,
     importance,
+    deleted,
   })
     .then((result) => {
       res.status(200).send(result); // result is the Note that was created
