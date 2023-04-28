@@ -534,7 +534,7 @@ app.delete("/api/notes/:note_id", (req, res) => {
 
 // Retrieve all completed Todos from DB note table
 app.get("/api/achievements/achieved-todos", (req, res) => {
-  Todo.findAll({ where: { status: "completed" } }) // you can filter multiple columns
+  Todo.findAll({ where: { status: "completed", deleted: "false" } }) // you can filter multiple columns
     .then((results) => {
       res.status(200).send(results);
     })
@@ -545,7 +545,7 @@ app.get("/api/achievements/achieved-todos", (req, res) => {
 
 // Retrieve all completed Goals from DB note table
 app.get("/api/achievements/achieved-goals", (req, res) => {
-  Goal.findAll({ where: { status: "completed" } })
+  Goal.findAll({ where: { status: "completed", deleted: "false" } })
     .then((results) => {
       res.status(200).send(results);
     })
